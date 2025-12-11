@@ -1,0 +1,50 @@
+# 开发环境配置文件
+app:
+  port: 8082
+  env: "development"  # development, staging, production
+  timezone: "Asia/Shanghai"
+
+# 数据库配置
+database:
+  host: 192.168.11.119
+  port: 3306
+  user: root
+  password: 123456
+  name: demo_db
+
+# Redis配置
+redis:
+  host: 192.168.11.119
+  port: 6379
+  password: ""
+
+# NATS配置
+nats:
+  host: 192.168.11.119
+  port: 4222
+  user: ""
+  password: ""
+
+# 日志配置
+log:
+  level: "debug"       # debug, info, warn, error
+  format: "console"   # console, json
+  output: "both"      # stdout, file, both
+  file:
+    filename: "logs/app.log"
+    max_size: 100     # MB
+    max_backups: 10   # 保留文件数
+    max_age: 30       # 保留天数
+    compress: true
+
+# JWT配置
+jwt:
+  secret: "w8vQwK1pJ3h2T9zX4s6b8c0d5e7f1g2h+Q1vR2tS3uV4wX5yZ6a7b8c9d0e1f123"
+
+# MinIO配置
+minio:
+  endpoint: "min.vcity.app"
+  access_key: "wSq3toBB2CvkiMklipwM"
+  secret_key: "PhRSKMgk50QtDwNrkjiOB6GPqLIFnx2Raa89sMF4"
+  bucket_name: "school-prod"
+

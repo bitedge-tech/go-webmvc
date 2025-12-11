@@ -1,0 +1,60 @@
+# Go相关忽略
+# 二进制文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 测试二进制文件
+*.test
+
+# Go覆盖率工具输出
+*.out
+*.prof
+coverage.html
+
+# 依赖目录
+vendor/
+go.sum
+
+# Go工作区文件
+go.work
+go.work.sum
+
+# Gin项目特定忽略
+# 配置文件（根据需要可以取消注释）
+# *.env
+# config.yaml
+# config.toml
+# config.json
+
+# 临时文件和日志
+tmp/
+*.log
+*.log.zip
+logs/
+
+# 上传的文件（如果应用允许上传）
+uploads/
+
+# 编译输出
+bin/
+build/
+dist/
+
+# IDE相关
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Air热重载生成的文件(如果使用)
+
+# 其他临时或生成的文件
+.env.local
+node_modules/
+static/
+docs/
+docs_dev/

@@ -190,7 +190,16 @@ log:
 
 ## English summary
 
-`go-webmvc` is a minimal Go web service template using Gin + GORM + Redis + zap. It includes example Docker multi-stage builds and a WebSocket demo. Build with `go build -o build/adminServer ./cmd/server` (set GOOS/GOARCH for linux builds). Recommended deployment pattern: CI builds image → push to registry → orchestrate with Kubernetes / Docker Compose.
+# go-webmvc
+A Go web service template for learning and rapid startup, following a typical enterprise application layering: handler → service → repository → model. The project integrates and demonstrates common component integration schemes, including: 
+- Gin (HTTP framework)
+- GORM (MySQL) and gorm-gen (code generation example)
+  - Redis client encapsulation  
+  - JWT authentication middleware
+  - NaTS connection example
+  - Structured logging (zap + lumberjack)
+  - Target audience: Those looking for a lightweight, customizable Go service skeleton for learning or as an internal template.
+  - Note: This project simply integrates some of the most commonly used packages in Go web development and organizes the code according to the MVC pattern. The main purpose is to help users quickly set up projects and get into business code development. The project does not impose any restrictions on the code; users can modify and use the code as they wish.
 
 
 

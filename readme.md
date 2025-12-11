@@ -14,9 +14,9 @@
 - Gin（HTTP 框架）
 - GORM（MySQL）与 gorm-gen（代码生成示例）
 - Redis 客户端封装
+- JWT 鉴权中间件
+- NaTS 连接示例
 - 结构化日志（zap + lumberjack）
-- WebSocket 示例、验证码（captcha）示例
-- 多阶段 Docker 构建示例
 
 目标受众：想要一套轻量、可改造的 Go 服务骨架，用于学习或作为内部模板。
 

@@ -40,6 +40,7 @@
   - [扩展一个service示例](#扩展一个service示例)
   - [新增一个数据库表示例](#新增一个数据库表示例)
   - [使用 配置示例](#使用-配置示例)
+  - [生成swagger文档示例](#生成swagger文档示例)
   - [使用 Redis 示例](#使用-redis-示例)
   - [使用 Nats 示例](#使用-nats-示例)
 - [贡献指南](#贡献指南)
@@ -194,6 +195,95 @@ go run ./cmd/gen/main.go
 生成的文件在 `internal/repository/query/user.gen.go`，包含对 user 表的增删改查等操作方法。
 
 >2.3 实现查询用户信息的业务逻辑.
+(1) 在 handler 层添加用户查询处理器, 在internal/handler/users/user_handler.go`文件中添加函数: UserInfo()
+```golang
+package users
+
+import (
+	"go-webmvc/internal/dto"
+	"go-webmvc/internal/handler"
+	"go-webmvc/internal/service"
+
+	"github.com/gin-gonic/gin"
+)
+
+func UserInfo(c *gin.Context) {
+
+	// 1. 参数绑定:从客户端请求中获取用户ID, get请求的参数中
+	req := dto.UserInfoRequest{}
+	if err := c.ShouldBindQuery(&req); err != nil {
+		handler.Failed(c, "参数绑定失败")
+		return
+	}
+
+	// 2. 调用服务层获取用户信息
+	userService := service.Services.User
+	userInfo, err := userService.UserInfo(req.UserID)
+	if err != nil {
+		handler.Failed(c, "获取用户信息失败")
+		return
+	}
+
+	// 3. 返回成功响应给客户端
+	if userInfo == nil {
+		handler.Failed(c, "用户不存在")
+		return
+	}
+	handler.Success(c, userInfo)
+
+}
+```
+(2) 在 service 层添加用户查询逻辑,在`internal/service/user_service.go`文件中添加函数:UserInfo()
+```golang
+package service
+
+import (
+	"errors"
+	"go-webmvc/internal/repository/model"
+	"go-webmvc/internal/repository/query"
+
+	"gorm.io/gorm"
+)
+
+type UserI interface {
+	UserInfo(userID int64) (user *model.User, err error)
+}
+
+type userService struct {
+}
+
+func (*userService) UserInfo(userID int64) (user *model.User, err error) {
+
+	//从数据库查询用户信息
+	q := query.User
+	user, err = q.WithContext(nil).Where(q.ID.Eq(userID)).First()
+
+	// 如果查询出错且不是记录未找到错误，则返回错误
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
+
+	return user, nil
+
+}
+
+```
+(3) 在 dto 层定义请求参数结构体,在`internal/dto/user_dto.go`文件中添加:
+```golang
+type UserInfoRequest struct {
+	UserID int64 `form:"user_id" binding:"required"`
+}
+```
+(4) 在 router 层注册路由,在`internal/router/router.go`文件中添加:
+```golang
+r.GET("/user/info", users.UserInfo)
+```
+(5) 运行项目,测试接口:
+```shell
+ go run ./cmd/server/main.go
+```
+在浏览器中打开 http://localhost:8080/user/userInfo?user_id=1 查看结果. 在数据库中插入一条 user 记录,即可看到返回的用户信息.
+
 
 **注:更多数据库的操作方式可以查询 gorm gorm-gen 的文档**: https://gorm.io/zh_CN/docs/
 
@@ -207,6 +297,8 @@ go run ./cmd/gen/main.go
 ### 新增一个数据库表示例
 
 ### 使用 配置示例
+
+### 生成swagger文档示例
 
 ### 使用 Redis 示例
 

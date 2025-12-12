@@ -35,6 +35,7 @@ func verifyCaptcha(captchaId, captchaVal string) bool {
 // @Router /login/index [post]
 func Login(c *gin.Context) {
 	var req dto.LoginRequest
+
 	if err := c.ShouldBindJSON(&req); err != nil {
 		handler.Failed(c, "参数绑定失败")
 		return

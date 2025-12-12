@@ -1,6 +1,6 @@
 # 开发环境配置文件
 app:
-  port: 8082
+  port: 8080
   env: "development"  # development, staging, production
   timezone: "Asia/Shanghai"
 

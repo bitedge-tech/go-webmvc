@@ -38,6 +38,7 @@ func SetupRouter() *gin.Engine {
 		c.Next()
 	})
 
+	// 系统根路径 http://localhost:8080/
 	r.GET("/", index.Index)
 
 	// /login 及其子路径不需要验证

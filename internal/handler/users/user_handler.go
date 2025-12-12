@@ -8,5 +8,4 @@ import (
 
 func UserInfo(c *gin.Context) {
 	handler.Success(c, nil)
-
 }

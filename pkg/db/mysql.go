@@ -65,8 +65,6 @@ func CloseMySQL() {
 func MigrateDB() error {
 	// 自动迁移所有模型
 	return DB.AutoMigrate(
-		&model.SysUser{},
-		&model.SysRole{},
-		&model.SysMenu{},
+		&model.User{},
 	)
 }

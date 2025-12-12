@@ -13,6 +13,7 @@
 
 - Gin（HTTP 框架）
 - GORM（MySQL）与 gorm-gen（代码生成示例）
+- Viper 配置管理
 - Redis 客户端封装
 - JWT 鉴权中间件
 - NaTS 连接示例
@@ -41,15 +42,19 @@
 ## 特性
 
 - 清晰的目录分层，便于开发与维护
+- Gin 框架，支持中间件扩展
 - 封装数据库（GORM）与 Redis 客户端初始化逻辑
+- 支持 gorm-gen 代码生成（`internal/repository/query`）
+- 集成 Viper 配置管理，支持 YAML 文件与环境变量覆盖
 - 日志系统使用 `zap`，支持文件切割（lumberjack）
 - 包含登录、验证码、用户接口示例
-- 支持 gorm-gen 代码生成（`internal/repository/query`）
 - Docker镜像构建和运行示例
 
 ---
 
 ## 快速开始（3 分钟上手）
+
+>环境要求：已装好 Go语言环境（1.24.6 及以上），根据需要安装 MySQL 和 Redis 。
 
 1. 克隆仓库并进入项目目录：
 
@@ -61,8 +66,6 @@ cd go-webmvc
 2. 准备配置（参考下文 `配置详例`）：编辑 `config/config.dev.yaml` 
 > 注意：请确保本地有 MySQL 和 Redis 实例在运行; 如果不需要redis,可以在server/main.go中注释掉redis的初始化代码。
 
-
-
 3. 安装依赖:
 
 ```cmd
@@ -73,86 +76,114 @@ go mod tidy
 4. 运行程序:
 
 ```cmd
-go run ./cmd/server
+go run ./cmd/server/main.go
 ```
+- 看到  Listening and serving HTTP on :8080 表示启动成功。
+- 在浏览器访问 http://localhost:8080/   页面显示: "Welcome to Go WebMVC!" 说明服务运行正常。
 
-## 项目结构（按实际代码）
+## 项目结构
 
 仓库主要目录（摘录）：
 
-- `cmd/`
+- `cmd/` ：应用入口
   - `server/main.go`：应用入口，负责配置加载、各组件初始化（日志、DB、Redis）、路由注册与启动。
-  - `ws.go`：独立 WebSocket 示例程序。
   - `gen/`：代码生成相关（gorm-gen）或生成脚本。
 - `config/`：配置加载器与示例 YAML（`config.go`, `config.dev.yaml`）。
-- `internal/`
+- `internal/` ：核心业务代码都放在这里
   - `handler/`：HTTP 层处理函数（login、users、index 等）。
   - `service/`：业务逻辑层。
   - `repository/`：持久层（`model/` + `query/`）。
   - `router/`：路由注册（`internal/router/router.go`）。
   - `middleware/`：中间件（如 JWTAuth）。
-- `pkg/`
+- `pkg/` ：第三方组件封装
   - `pkg/db/`：MySQL 初始化与迁移（`mysql.go`）。
   - `pkg/logger/`：zap 日志封装（`logger.go`）。
   - `pkg/redis/`：Redis 客户端（`redis.go`）。
-  - `pkg/natCon/`：NATS 连接示例（可选）。
-- `build/`：二进制产物目录（`build/adminServer`）。
-- `Dockerfile`：镜像构建脚本（建议按 README 示例修改为多阶段构建）。
-
----
-
-## 配置详例（YAML & 环境变量）
-
-示例 `config/config.dev.yaml`（请按实际 `config.go` 字段调整）：
-
-```yaml
-app:
-  env: development
-  port: "8080"
-
-database:
-  host: 127.0.0.1
-  port: 3306
-  user: root
-  password: password
-  name: go_webmvc_db
-
-redis:
-  host: 127.0.0.1
-  port: 6379
-  password: ""
-
-log:
-  output: stdout # stdout | file | both
-  level: info
-  file:
-    filename: logs/app.log
-    max_size: 100
-    max_backups: 7
-    max_age: 30
-    compress: true
-```
-
-推荐的环境变量覆盖（示例）：
-
-- APP_ENV
-- APP_PORT
-- DB_HOST / DB_PORT / DB_USER / DB_PASSWORD / DB_NAME
-- REDIS_HOST / REDIS_PORT / REDIS_PASSWORD
-- LOG_OUTPUT / LOG_LEVEL
-
-（项目中的 `config.LoadConfig()` 会读取 YAML 并支持环境变量覆盖，具体键名请参考 `config/config.go`）
+  - `pkg/natCon/`：NATS 连接示例。
+- `build/`：编译生成的二进制文件,可以对应系统中直接运行（`build/app1`）。
+- `Dockerfile`：镜像构建脚本,用于生成docker镜像运行在docker下。
 
 ---
 
 ## 本地开发入门 (更新中...)
-### 新增一个http请求处理器示例
+
+### 从最简单的API开始
+1. **先看下项目的 http://127.0.0.1:8080/ 返回 "Welcome to Go WebMVC!" 的实现.**
+* 在handler层中,internal/handler/index/index_handler.go文件下新增Index函数:
+```golang
+func Index(c *gin.Context) {
+	c.JSON(http.StatusOK, "welcome to go-webmvc!")
+}
+
+```
+* 在router中,internal/router/router.go文件下注册路由:
+```golang
+r.GET("/", index.Index)
+``` 
+* 运行项目,访问 http://127.0.0.1:8080/ 即可看到返回结果.
+
+2. **实现一个查询用户信息的API示例.**
+
+>2.1 首先需要有user表, 我们通过使用model结构体来生成数据库表.
+(**前提:确保项目已经连接到数据库**);
+* 在 model 层定义 User 结构体（`internal/repository/model/user.go`）:
+```golang
+package model
+import (
+	"time"
+)
+
+type User struct {
+	ID        int64     `gorm:"primaryKey;autoIncrement" json:"id"`
+	Username  string    `gorm:"type:varchar(50);not null" json:"username"` //用户名
+	Password  string    `gorm:"type:varchar(50); " json:"-"`               //密码
+	Nickname  string    `gorm:"type:varchar(50); " json:"nickname"`        //昵称
+	Salt      string    `gorm:"type:varchar(100);" json:"-"`               //密码盐值
+	Phone     string    `gorm:"type:varchar(20); " json:"phone"`           //手机号
+	Email     string    `gorm:"type:varchar(100); " json:"email"`          //邮箱
+	Avatar    string    `gorm:"type:varchar(255); " json:"avatar"`         //头像URL
+	Status    int       `gorm:"type:int ;default:0" json:"status"`         //0:保存, 1:启用, 9:禁用
+	RoleID    int64     `gorm:"type:bigint; " json:"role_id"`              //角色ID
+	CreatedAt time.Time `gorm:"type:timestamp;default:CURRENT_TIMESTAMP;column:created_at;" json:"create_at"`
+	CreatedBy int64     `gorm:"type:bigint; " json:"create_by"`
+	UpdatedAt time.Time `gorm:"type:timestamp;default:CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;column:updated_at;" json:"update_at"`
+	UpdatedBy int64     `gorm:"type:bigint; " json:"update_by"`
+}
+func (User) TableName() string { return "user" }
+
+```
+* 将 mode.User添加到数据库迁移中,在`pkg/db/mysql.go`文件的Migrate函数中添加:
+```golang
+
+func Migrate(db *gorm.DB) error {
+    // 自动迁移模式
+    return db.AutoMigrate(
+        &model.User{}, //新增User表
+        // 其他模型...
+    )
+}
+```
+* 运行项目,程序启动时会自动创建user表. (完成数据库表的创建)
+```shell
+ go run ./cmd/server/main.go
+```
+>2.2 使用 gorm-gen生成query数据库操作结构体(类).
+
+
+>2.3 实现查询用户信息的业务逻辑.
+
+**注:更多数据库的操作方式可以查询 gorm gorm-gen 的文档**: https://gorm.io/zh_CN/docs/
+
+
+### 如何新增一个http请求处理器示例
 
 ### 配置路由示例
 
 ### 扩展一个service示例
 
 ### 新增一个数据库表示例
+
+### 使用 配置示例
 
 ### 使用 Redis 示例
 
@@ -194,12 +225,12 @@ log:
 A Go web service template for learning and rapid startup, following a typical enterprise application layering: handler → service → repository → model. The project integrates and demonstrates common component integration schemes, including: 
 - Gin (HTTP framework)
 - GORM (MySQL) and gorm-gen (code generation example)
-  - Redis client encapsulation  
-  - JWT authentication middleware
-  - NaTS connection example
-  - Structured logging (zap + lumberjack)
-  - Target audience: Those looking for a lightweight, customizable Go service skeleton for learning or as an internal template.
-  - Note: This project simply integrates some of the most commonly used packages in Go web development and organizes the code according to the MVC pattern. The main purpose is to help users quickly set up projects and get into business code development. The project does not impose any restrictions on the code; users can modify and use the code as they wish.
+- Redis client encapsulation  
+- JWT authentication middleware
+- NaTS connection example
+- Structured logging (zap + lumberjack)
+- Target audience: Those looking for a lightweight, customizable Go service skeleton for learning or as an internal template.
+- Note: This project simply integrates some of the most commonly used packages in Go web development and organizes the code according to the MVC pattern. The main purpose is to help users quickly set up projects and get into business code development. The project does not impose any restrictions on the code; users can modify and use the code as they wish.
 
 
 

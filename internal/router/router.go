@@ -4,7 +4,6 @@ import (
 	"go-webmvc/internal/handler/index"
 	"go-webmvc/internal/handler/login"
 	"go-webmvc/internal/handler/users"
-	"go-webmvc/internal/middleware"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -55,12 +54,11 @@ func SetupRouter() *gin.Engine {
 
 	{
 		// /user 及其子路径需要JWT验证
-		authGroup := r.Group("/user", middleware.JWTAuth())
-		authGroup.GET("/", func(c *gin.Context) {
-			c.JSON(200, gin.H{"message": "auth root"})
-		})
+		//authGroup := r.Group("/user", middleware.JWTAuth())
+		authGroup := r.Group("/user")
 
-		authGroup.GET("/usrInfo", users.UserInfo)
+		// 获取用户信息路由
+		authGroup.GET("/userInfo", users.UserInfo)
 
 	}
 

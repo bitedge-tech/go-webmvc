@@ -9,6 +9,7 @@ import (
 
 // Success 通用成功响应
 func Success(ctx *gin.Context, data any) {
+
 	ctx.JSON(http.StatusOK, &dto.BaseResponse{
 		Code: 0,
 		Msg:  "success",
@@ -25,6 +26,6 @@ func Failed(ctx *gin.Context, msg string) {
 	ctx.JSON(http.StatusOK, &dto.BaseResponse{
 		Code: 1,
 		Msg:  sendMsg,
-		Data: nil,
+		Data: struct{}{},
 	})
 }

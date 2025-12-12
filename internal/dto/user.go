@@ -7,3 +7,7 @@ type UserListResponse struct {
 	Count int           `json:"count"`
 	Data  []*model.User `json:"data"`
 }
+
+type UserInfoRequest struct {
+	UserID int64 `form:"user_id" binding:"required"`
+}

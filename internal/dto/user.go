@@ -4,6 +4,6 @@ import "go-webmvc/internal/repository/model"
 
 type UserListResponse struct {
 	BaseResponse
-	Count int              `json:"count"`
-	Data  []*model.SysUser `json:"data"`
+	Count int           `json:"count"`
+	Data  []*model.User `json:"data"`
 }

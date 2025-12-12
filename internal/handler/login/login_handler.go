@@ -44,9 +44,9 @@ func Login(c *gin.Context) {
 		handler.Failed(c, "验证码错误")
 		return
 	}
-	var user model.SysUser
+	var user model.User
 	// 用 query.SysUser 查询
-	u, err := query.SysUser.Where(query.SysUser.Username.Eq(req.Username)).First()
+	u, err := query.User.Where(query.User.Username.Eq(req.Username)).First()
 	if err != nil || u == nil {
 		handler.Failed(c, "用户名或密码错误")
 

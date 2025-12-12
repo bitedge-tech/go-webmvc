@@ -1,4 +1,4 @@
-package natCon
+package natscon
 
 import (
 	"fmt"

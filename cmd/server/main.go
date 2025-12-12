@@ -41,8 +41,8 @@ func main() {
 	query.SetDefault(db.DB)
 
 	// 初始化NATS连接
-	//natCon.InitNATS()
-	//defer natCon.CloseNATS()
+	//natscon.InitNATS()
+	//defer natscon.CloseNATS()
 
 	//初始化Service
 	service.InitService()

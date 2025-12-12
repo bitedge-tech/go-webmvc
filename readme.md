@@ -132,7 +132,8 @@ func Index(c *gin.Context) {
 r.GET("/", index.Index)
 ``` 
 * 运行项目,访问 http://127.0.0.1:8080/ 即可看到返回结果.
-
+<br>
+<br>
 
 2. **实现一个查询用户信息的API示例.**
 
@@ -179,7 +180,7 @@ func Migrate(db *gorm.DB) error {
 ```shell
  go run ./cmd/server/main.go
 ```
-
+<br>
 
 >2.2 使用 gorm-gen生成数据库的操作结构体(类)-query.
 > 
@@ -195,6 +196,7 @@ g.ApplyBasic(
 go run ./cmd/gen/main.go
 ```
 生成的文件在 `internal/repository/query/user.gen.go`，包含对 user 表的增删改查等操作方法。
+<br>
 
 >2.3 实现查询用户信息的业务逻辑.
 (1) 在 handler 层添加用户查询处理器, 在internal/handler/users/user_handler.go`文件中添加函数: UserInfo()

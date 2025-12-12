@@ -3,7 +3,7 @@
 [![Go](https://img.shields.io/badge/go-1.24.6-blue)](https://golang.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-中文为主文档（English summary at the end）
+中文文档
 
 ---
 
@@ -24,7 +24,7 @@
 
 目标受众：想要一套轻量、可改造的 Go 服务骨架，用于学习或作为内部模板。
 
-> 说明： 本项目只是整合了目前使用Go开发web项目中最常用的一些工具包,并按MVC的模式进行了代码的组织,主要目的是方便使用者更快速的搭建项目,快速进入业务代码的开发,项目不对代码做任何限制,使用者可对代码进行任何的修改和使用。
+> 说明： 本项目只是整合了目前使用Go开发web项目中最常用的一些组件,并按MVC模式进行代码的组织,主要目的是方便使用者更快速的搭建项目,快速进入业务代码的开发,项目不对代码做任何限制,使用者可对代码进行任何的修改和使用。
 
 ---
 
@@ -115,7 +115,7 @@ go run ./cmd/server/main.go
 
 ---
 
-## 本地开发入门 (更新中...)
+## 开发入门 (更新中...)
 
 ### 从最简单的API开始
 1. **先看下项目的 http://127.0.0.1:8080/ 返回 "Welcome to Go WebMVC!" 的实现.**
@@ -136,7 +136,7 @@ r.GET("/", index.Index)
 
 >2.1 首先需要有user表, 我们通过使用model结构体来生成数据库表.
 (**前提:确保项目已经连接到数据库**);
-* 在 model 层定义 User 结构体（`internal/repository/model/user.go`）:
+(1) 在 model 层定义 User 结构体（`internal/repository/model/user.go`）:
 ```golang
 package model
 import (
@@ -162,7 +162,7 @@ type User struct {
 func (User) TableName() string { return "user" }
 
 ```
-* 将 mode.User添加到数据库迁移中,在`pkg/db/mysql.go`文件的Migrate函数中添加:
+(2) 将 mode.User添加到数据库迁移中,在`pkg/db/mysql.go`文件的Migrate函数中添加:
 ```golang
 
 func Migrate(db *gorm.DB) error {
@@ -173,12 +173,25 @@ func Migrate(db *gorm.DB) error {
     )
 }
 ```
-* 运行项目,程序启动时会自动创建user表. (完成数据库表的创建)
+(3) 运行项目,程序启动时会自动创建user表. (完成数据库表的创建)
 ```shell
  go run ./cmd/server/main.go
 ```
->2.2 使用 gorm-gen生成query数据库操作结构体(类).
 
+>2.2 使用 gorm-gen生成数据库的操作结构体(类)-query.
+> 
+(1) 在 cmd/gen/main.go 文件中添加 User 表的生成配置:
+```golang
+g.ApplyBasic(
+	model.User{},  //添加这一行
+	)
+
+```
+(2) 运行代码生成命令:
+```shell
+go run ./cmd/gen/main.go
+```
+生成的文件在 `internal/repository/query/user.gen.go`，包含对 user 表的增删改查等操作方法。
 
 >2.3 实现查询用户信息的业务逻辑.
 

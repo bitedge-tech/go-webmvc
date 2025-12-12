@@ -133,6 +133,7 @@ r.GET("/", index.Index)
 ``` 
 * 运行项目,访问 http://127.0.0.1:8080/ 即可看到返回结果.
 
+
 2. **实现一个查询用户信息的API示例.**
 
 >2.1 首先需要有user表, 我们通过使用model结构体来生成数据库表.
@@ -178,6 +179,7 @@ func Migrate(db *gorm.DB) error {
 ```shell
  go run ./cmd/server/main.go
 ```
+
 
 >2.2 使用 gorm-gen生成数据库的操作结构体(类)-query.
 > 

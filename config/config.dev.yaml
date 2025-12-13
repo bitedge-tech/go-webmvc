@@ -6,21 +6,21 @@ app:
 
 # 数据库配置
 database:
-  host: 192.168.11.119
+  host: localhost
   port: 3306
   user: root
   password: 123456
-  name: demo_db
+  name: go-webmvc-db
 
 # Redis配置
 redis:
-  host: 192.168.11.119
+  host: localhost
   port: 6379
   password: ""
 
 # NATS配置
 nats:
-  host: 192.168.11.119
+  host: localhost
   port: 4222
   user: ""
   password: ""

@@ -7,7 +7,6 @@ import (
 	"go-webmvc/internal/service"
 	"go-webmvc/pkg/db"
 	"go-webmvc/pkg/logger"
-	"go-webmvc/pkg/redis"
 	"log"
 )
 
@@ -33,12 +32,12 @@ func main() {
 		return
 	}
 
-	//初始化Redis连接,如不需要可注释掉
-	redis.InitRedis()
-	defer redis.CloseRedis()
-
 	//初始化gorm-gen生成的query
 	query.SetDefault(db.DB)
+
+	//初始化Redis连接,如不需要可注释掉
+	//redis.InitRedis()
+	//defer redis.CloseRedis()
 
 	// 初始化NATS连接
 	//natscon.InitNATS()

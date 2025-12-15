@@ -60,6 +60,8 @@ func SetupRouter() *gin.Engine {
 		// 获取用户信息路由
 		authGroup.GET("/userInfo", users.UserInfo)
 
+		//authGroup.POST("/userInfo", users.UserInfo)
+
 	}
 
 	return r

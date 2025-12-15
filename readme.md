@@ -184,6 +184,7 @@ func Migrate(db *gorm.DB) error {
 
 >2 使用 gorm-gen生成数据库的操作结构体(类)-query.
 > 
+> 
 (1) 在 cmd/gen/main.go 文件中添加 User 表的生成配置:
 ```golang
 g.ApplyBasic(
@@ -287,6 +288,33 @@ r.GET("/user/info", users.UserInfo)
  go run ./cmd/server/main.go
 ```
 在浏览器中打开 http://localhost:8080/user/userInfo?user_id=1 查看结果. 在数据库中插入一条 user 记录,即可看到返回的用户信息.
+
+### 用户信息查询的POST请求示例
+如果想使用POST请求来查询用户信息,只需修改3个地方:
+1.在dto中将参数绑定标签改为json:
+```golang
+type UserInfoRequest struct {
+    UserID int64 `json:"user_id" binding:"required"`
+}
+```
+
+2.在handler中将参数绑定方式改为ShouldBindJSON,其他代码不变.
+```golang
+// 1. 参数绑定:从客户端请求中获取用户ID, post请求的json体中
+req := dto.UserInfoRequest{}
+if err := c.ShouldBindJSON(&req); err != nil {
+    handler.Failed(c, "参数绑定失败") 
+    return
+}
+// 其他代码不变
+```
+3.在router中将路由方法改为POST:
+```golang
+r.POST("/user/info", users.UserInfo)
+``` 
+通过以上3个修改,即可实现POST请求查询用户信息. 重启服务后,使用POST请求访问 http://localhost:8080/user/info ,请求体为json
+
+
 
 
 ### 使用 配置示例

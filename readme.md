@@ -135,9 +135,9 @@ r.GET("/", index.Index)
 <br>
 <br>
 
-2. **实现一个查询用户信息的API示例.**
+### 实现一个查询用户信息的完整API示例.
 
->2.1 首先需要有user表, 我们通过使用model结构体来生成数据库表.
+>1 首先需要有user表, 我们通过使用model结构体来生成数据库表.
 (**前提:确保项目已经连接到数据库**);
 (1) 在 model 层定义 User 结构体（`internal/repository/model/user.go`）:
 ```golang
@@ -182,7 +182,7 @@ func Migrate(db *gorm.DB) error {
 ```
 <br>
 
->2.2 使用 gorm-gen生成数据库的操作结构体(类)-query.
+>2 使用 gorm-gen生成数据库的操作结构体(类)-query.
 > 
 (1) 在 cmd/gen/main.go 文件中添加 User 表的生成配置:
 ```golang
@@ -198,7 +198,7 @@ go run ./cmd/gen/main.go
 生成的文件在 `internal/repository/query/user.gen.go`，包含对 user 表的增删改查等操作方法。
 <br>
 
->2.3 实现查询用户信息的业务逻辑.
+>3 实现查询用户信息的业务逻辑.
 (1) 在 handler 层添加用户查询处理器, 在internal/handler/users/user_handler.go`文件中添加函数: UserInfo()
 ```golang
 package users
@@ -288,17 +288,6 @@ r.GET("/user/info", users.UserInfo)
 ```
 在浏览器中打开 http://localhost:8080/user/userInfo?user_id=1 查看结果. 在数据库中插入一条 user 记录,即可看到返回的用户信息.
 
-
-**注:更多数据库的操作方式可以查询 gorm gorm-gen 的文档**: https://gorm.io/zh_CN/docs/
-
-
-### 如何新增一个http请求处理器示例
-
-### 配置路由示例
-
-### 扩展一个service示例
-
-### 新增一个数据库表示例
 
 ### 使用 配置示例
 

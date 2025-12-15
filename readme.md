@@ -323,9 +323,13 @@ r.POST("/user/info", users.UserInfo)
 - `config.prod.yaml`：生产环境的示例配置文件。
 
 在代码中使用配置示例:
+
 (1) 在 config.yaml 文件中添加需要的配置信息;
+
 (2) 在 config.go 文件中的 Config 结构体中添加对应的字段;
+
 (3) 在代码中通过 config.AppConfig 变量获取需的要配置信息.
+
 例如,获取服务器端口号:
 ```golang
 port := config.AppConfig.App.Port

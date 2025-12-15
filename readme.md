@@ -118,8 +118,8 @@ go run ./cmd/server/main.go
 
 ## 开发入门 (更新中...)
 
-### 从最简单的API开始
-1. **先看下项目的 http://127.0.0.1:8080/ 返回 "Welcome to Go WebMVC!" 的实现.**
+### 1.从最简单的API开始
+**先看下项目的 http://127.0.0.1:8080/ 返回 "Welcome to Go WebMVC!" 的实现.**
 * 在handler层中,internal/handler/index/index_handler.go文件下新增Index函数:
 ```golang
 func Index(c *gin.Context) {
@@ -135,7 +135,7 @@ r.GET("/", index.Index)
 <br>
 <br>
 
-### 实现一个查询用户信息的完整API示例.
+### 2.实现一个查询用户信息的完整API示例.
 
 >1 首先需要有user表, 我们通过使用model结构体来生成数据库表.
 (**前提:确保项目已经连接到数据库**);
@@ -316,14 +316,27 @@ r.POST("/user/info", users.UserInfo)
 
 
 
+### 3.使用配置示例
+项目的配置信息存放在 config 目录下,主要文件有:
+- `config.go`：配置加载器，使用 Viper 实现。
+- `config.dev.yaml`：开发环境的示例配置文件。
+- `config.prod.yaml`：生产环境的示例配置文件。
 
-### 使用 配置示例
+在代码中使用配置示例:
+(1) 在 config.yaml 文件中添加需要的配置信息;
+(2) 在 config.go 文件中的 Config 结构体中添加对应的字段;
+(3) 在代码中通过 config.AppConfig 变量获取需的要配置信息.
+例如,获取服务器端口号:
+```golang
+port := config.AppConfig.App.Port
+```
 
-### 生成swagger文档示例
 
-### 使用 Redis 示例
+### 4.生成swagger文档示例
 
-### 使用 Nats 示例
+### 5.使用 Redis 示例
+
+### 6.使用 Nats 示例
 
 
 ---

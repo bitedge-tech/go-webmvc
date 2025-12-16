@@ -322,13 +322,13 @@ r.POST("/user/info", users.UserInfo)
 - `config.dev.yaml`：开发环境的示例配置文件。
 - `config.prod.yaml`：生产环境的示例配置文件。
 
-在代码中使用配置示例:
+在代码中使用配置信息示例:
 
 (1) 在 config.yaml 文件中添加需要的配置信息;
 
 (2) 在 config.go 文件中的 Config 结构体中添加对应的字段;
 
-(3) 在代码中通过 config.AppConfig 变量获取需的要配置信息.
+(3) 在代码中需要使用配置信息的地方通过 config.AppConfig 变量获取需的要配置信息.
 
 例如,获取服务器端口号:
 ```golang
@@ -337,7 +337,42 @@ port := config.AppConfig.App.Port
 
 
 ### 4.生成swagger文档示例
+项目集成了 swaggo 来生成 Swagger 文档。以下是生成和查看 Swagger 文档的步骤：
 
+(1) 在需要生成文档的 handler 函数上添加注释，描述接口信息。例如，在 `internal/handler/users/user_handler.go` 文件中的 `UserInfo` 函数上添加注释:
+```golang
+// UserInfo 获取用户信息的处理函数 (Get 请求)
+// @Summary 获取用户信息
+// @Description 根据用户ID获取用户的详细信息
+// @Tags 用户相关接口
+// @Accept json
+// @Produce json
+// @Param user_id query int true "用户ID"
+// @Success 200 {object} dto.UserInfoResponse "成功返回用户信息"
+// @Failure 400 {object} dto.BaseResponse "参数绑定失败或请求错误"
+// @Failure 500 {object} dto.BaseResponse "服务器内部错误"
+// @Router /user/userInfo [get]
+func UserInfo(c *gin.Context) {}
+```
+(2) 在命令行中运行: swag init -g cmd/server/main.go;  生成的 Swagger 文档文件会放在 `docs/` 目录下。
+(3)  可以直接打开 `docs/swagger.json` 文件查看生成的 Swagger JSON 文档内容。 
+
+(4) 也可以配置路由,启动服务后，访问 `http://localhost:8080/swagger/index.html` 查看生成的 Swagger UI 界面。 配置如下:
+```go
+// 在 router.go 中添加 Swagger 路由和引入相关包:
+import (
+    "go-webmvc/docs"
+    swaggerFiles "github.com/swaggo/files"
+    ginSwagger "github.com/swaggo/gin-swagger"
+)
+
+docs.SwaggerInfo.Host = "localhost:8080"
+docs.SwaggerInfo.Schemes = []string{"http"}
+docs.SwaggerInfo.BasePath = "/"
+
+r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+```
 ### 5.使用 Redis 示例
 
 ### 6.使用 Nats 示例

@@ -1,6 +1,7 @@
 package router
 
 import (
+	"go-webmvc/docs"
 	"go-webmvc/internal/handler/index"
 	"go-webmvc/internal/handler/login"
 	"go-webmvc/internal/handler/users"
@@ -9,10 +10,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-
-	docs "go-webmvc/docs"
-
-	// swagger UI packages
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )

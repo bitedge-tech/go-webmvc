@@ -9,6 +9,12 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+
+	docs "go-webmvc/docs"
+
+	// swagger UI packages
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func SetupRouter() *gin.Engine {
@@ -22,6 +28,11 @@ func SetupRouter() *gin.Engine {
 	}
 
 	r := gin.Default()
+
+	// Configure swagger info so the generated UI points to local server (placeholder values; `swag init` will overwrite real docs)
+	docs.SwaggerInfo.Host = "localhost:8080"
+	docs.SwaggerInfo.Schemes = []string{"http"}
+	docs.SwaggerInfo.BasePath = "/"
 
 	//处理跨域
 	r.Use(cors.New(cors.Config{
@@ -39,6 +50,9 @@ func SetupRouter() *gin.Engine {
 
 	// 系统根路径 http://localhost:8080/
 	r.GET("/", index.Index)
+
+	// swagger 文档路径 http://localhost:8080/swagger/index.html
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// /login 及其子路径不需要验证
 	{

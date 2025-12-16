@@ -17,3 +17,8 @@ type UserInfoRequest struct {
 type UserInfoRequest2 struct {
 	UserID int64 `json:"user_id" binding:"required"`
 }
+
+type UserInfoResponse struct {
+	BaseResponse
+	Data *model.User `json:"data"`
+}

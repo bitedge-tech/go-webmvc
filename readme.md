@@ -117,7 +117,7 @@ go run ./cmd/server/main.go
 ---
 
 ## 开发入门 (更新中...)
-
+相关代码均在 `internal/` 目录下.
 ### 1.从最简单的API开始
 **先看下项目的 http://127.0.0.1:8080/ 返回 "Welcome to Go WebMVC!" 的实现.**
 * 在handler层中,internal/handler/index/index_handler.go文件下新增Index函数:
